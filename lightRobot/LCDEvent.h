@@ -20,9 +20,9 @@ class LCDEvent : public TimeEvent
   /*! Callback which is executed periodically*/
   virtual void onTimeEvent();
   /*! Returns an internal state.*/
-  virtual int getInternalState();
+  virtual unsigned char getInternalState();
   /*! Sets an internal state.*/
-  virtual void setInternalState(int state, bool update=false);
+  virtual void setInternalState(unsigned char state, bool update=false);
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
   
@@ -32,6 +32,7 @@ class LCDEvent : public TimeEvent
   enum  State{
 	clear,
 	init,
+        init_options,
 	manualControl,
 	remoteControl,
 	but_A,
@@ -44,13 +45,13 @@ class LCDEvent : public TimeEvent
   /*! Resets the LCD cursor and saves the number of printed chars.
 	\param drawed_chars number of chars drawn.
   */
-  void afterPaint(int drawed_chars);
+  void afterPaint(unsigned char drawed_chars);
   
   /*! Prints a message and adds white spaces to overdraw the old message.
 	\param message the message to be drawn.
 	\return number of drawn messages.
   */
-  int paint(const char* message);
+  unsigned char paint(const char* message);
   
   private:
   
@@ -64,11 +65,11 @@ class LCDEvent : public TimeEvent
   
   /*! Saves the row in which the data should be displayed*/
   
-  int m_drawing_row;
+  unsigned char m_drawing_row;
   
   /*! Saves the number of characters*/
   
-  int m_drawed_chars;
+  unsigned char m_drawed_chars;
   
 };
 

@@ -22,11 +22,13 @@ class BlueToothEvent : public TimeEvent
   /*! Callback which is executed periodically*/
   virtual void onTimeEvent();
   /*! Returns an internal state.*/
-  virtual int getInternalState();
+  virtual unsigned char getInternalState();
   /*! Sets an internal state.*/
-  virtual void setInternalState(int state, bool update=false);
+  virtual void setInternalState(unsigned char state, bool update=false);
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
+  
+  unsigned char getData(unsigned char field);
   
   private:
   
@@ -35,7 +37,7 @@ class BlueToothEvent : public TimeEvent
     velocity,//desired velocity
     color,//desired color of the LEDs
     mode,//the different modes: remote, random, blink
-  }
+  };
   
   unsigned char m_data[DATA_WORD_LENGTH];
   

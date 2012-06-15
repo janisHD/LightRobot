@@ -4,7 +4,11 @@
  BlueToothEvent::BlueToothEvent():
  TimeEvent()
 {
-  m_data = {0,0,0,0};
+  //init data array
+  m_data[mode] = 0;
+  m_data[velocity] = 0;
+  m_data[direction] = 0;
+  m_data[color] = 0;
 }
 
 void BlueToothEvent::onTimeEvent()
@@ -15,42 +19,29 @@ void BlueToothEvent::onTimeEvent()
         //[1] -> velocity to drive [0-254]
         //[2] -> desired color for the Light [0-254]
         //[3] -> internal mode (see responsible class)[0-254]
-        //[5] -> termination value [255]
+        //[5] -> termination value [255] is it necessary?
         
         //ONLY STUB CODE:
-        m_data = {10,100, 50, 1};
+        m_data[mode] = 0;
+        m_data[velocity] = 0;
+        m_data[direction] = 0;
+        m_data[color] = 0;
 }
 
-void BlueToothEvent::saveReceivedData()
+unsigned char BlueToothEvent::getData(unsigned char field)
 {
-  m_internal_mode = m_data[mode];
-  m_direction = m_data[direction];
-  m_velocity = m_data[velocity];
-  m_light = m_data[light];
+  if(field <= mode)
+    return m_data[field];
+  else
+    return 0;
 }
 
-
-int BlueToothEvent::getInternalState()
+unsigned char BlueToothEvent::getInternalState()
 {
-  return m_internal_mode;
+  return m_data[mode];
 }
 
-int BlueToothEvent::getDirection()
-{
-  return m_direction;
-}
-
-int BlueToothEvent::getVelocity()
-{
-  return m_velocity;
-}
-
-int BlueToothEvent::getColor()
-{
-  return m_color;
-}
-
-void BlueToothEvent::setInternalState(int state, bool update)
+void BlueToothEvent::setInternalState(unsigned char state, bool update)
 {
   //nothing to do here!
 }

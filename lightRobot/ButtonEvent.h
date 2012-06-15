@@ -8,7 +8,9 @@
 #define BUTTON_EVENT_H
 
 /*! \class ButtonEvent
-Checks the hardware buttons periodically, and makes the status public. The status is automatically cleared after reading.
+Checks the hardware buttons periodically, and makes the status public. Two sorts of status are available -> hold true after pressed and during hold, -> pressed true only after pressed, during hold false.
+TODO: - Rename pressed to hold (currently only hold is implemented)
+      - Implement pressed
 */
 class ButtonEvent : public TimeEvent
 {
@@ -20,9 +22,9 @@ class ButtonEvent : public TimeEvent
   /*! Callback which is executed periodically*/
   virtual void onTimeEvent();
   /*! Returns an internal state.*/
-  virtual int getInternalState();
+  virtual unsigned char getInternalState();
   /*! Sets an internal state.*/
-  virtual void setInternalState(int state, bool update=false);
+  virtual void setInternalState(unsigned char state, bool update=false);
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
   

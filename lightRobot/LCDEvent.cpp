@@ -3,6 +3,7 @@
 
 #define ERROR_STRING "error"
 #define INIT_STRING "init"
+#define INIT_OPTIONS_STRING "A:Rm B:M"
 #define REMOTE_CONTROL_STRING "rem cont"
 #define MANUAL_CONTROL_STRING "man cont"
 
@@ -37,6 +38,11 @@ void LCDEvent::onTimeEvent()
 				afterPaint(paint(INIT_STRING));
 				break;
 			}
+                        case init_options:
+                        {
+                          afterPaint(paint(INIT_OPTIONS_STRING));
+                          break;
+                        }
 			case manualControl:
 			{
 				afterPaint(paint(MANUAL_CONTROL_STRING));
@@ -56,16 +62,16 @@ void LCDEvent::onTimeEvent()
           }
 }
 
-void LCDEvent::afterPaint(int drawed_chars)
+void LCDEvent::afterPaint(unsigned char drawed_chars)
 {
 //	m_lcd_display.gotoXY(0,m_drawing_row);
 	m_drawed_chars = drawed_chars;
 }
 
-int LCDEvent::paint(const char* message)
+unsigned char LCDEvent::paint(const char* message)
 {
-	int message_length = String(message).length();
-        int message_diff = 0;
+	unsigned char message_length = String(message).length();
+        unsigned char message_diff = 0;
         
         m_lcd_display.print(message);
 	if(message_length < m_drawed_chars)
@@ -81,12 +87,12 @@ int LCDEvent::paint(const char* message)
 	return message_length;//should be only the real length of the message, else the message would ever grow longer!
 }
 
-int LCDEvent::getInternalState()
+unsigned char LCDEvent::getInternalState()
 {
   return m_old_internal_state;
 }
 
-void LCDEvent::setInternalState(int state, bool update)
+void LCDEvent::setInternalState(unsigned char state, bool update)
 {
         m_update = update;
 	m_new_internal_state = (State)state;

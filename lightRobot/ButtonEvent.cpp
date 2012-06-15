@@ -40,7 +40,7 @@ void ButtonEvent::onTimeEvent()
           m_button_bottom = false;        
 }
 
-int ButtonEvent::getInternalState()
+unsigned char ButtonEvent::getInternalState()
 {
   return m_buttons_state;
 }
@@ -61,7 +61,7 @@ bool ButtonEvent::isButtonBottomPressed()
   return m_button_bottom;
 }
 
-void ButtonEvent::setInternalState(int state, bool update)
+void ButtonEvent::setInternalState(unsigned char state, bool update)
 {
 	//nothing to do here!
 }
