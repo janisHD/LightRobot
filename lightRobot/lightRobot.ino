@@ -6,6 +6,7 @@
 #include <OrangutanLCD.h>
 #include "ButtonEvent.h"
 #include "LCDEvent.h"
+#include "BlueToothEvent.h"
 
 #define SLOW_ACTION 150
 #define MIDDLE_ACTION 25
