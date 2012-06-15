@@ -2,6 +2,7 @@
 #include "ButtonEvent.h"
 
  ButtonEvent::ButtonEvent():
+ TimeEvent(),
 m_buttons_state(0),
 m_button_pressed(false),
 m_button_top(false),
@@ -12,7 +13,10 @@ m_button_bottom(false)
 
 void ButtonEvent::onTimeEvent()
 {
-	m_buttons_state = buttons.getSingleDebouncedPress(TOP_BUTTON | MIDDLE_BUTTON | BOTTOM_BUTTON);
+        unsigned char temp_pressed = m_buttons_state | buttons.getSingleDebouncedPress(TOP_BUTTON | MIDDLE_BUTTON | BOTTOM_BUTTON);
+        unsigned char temp_released_neg = ~(buttons.getSingleDebouncedRelease(TOP_BUTTON | MIDDLE_BUTTON | BOTTOM_BUTTON));
+        m_buttons_state = temp_pressed & temp_released_neg;// for example: button is pressed (and holded): Press -> 0001 Release -> 0000 -> Neg ->1111 -> & -> 0001, Release -> 0001 -> 1110 -> & -> 0000
+        
 	
 	if(m_buttons_state != 0)
 	  m_button_pressed = true;
@@ -38,45 +42,26 @@ void ButtonEvent::onTimeEvent()
 
 int ButtonEvent::getInternalState()
 {
-  if(m_button_pressed)
-  {
-    m_button_pressed = false;
-    return m_buttons_state;
-  }
-  return false;
+  return m_buttons_state;
 }
 
 bool ButtonEvent::isButtonTopPressed()
 {
-  if(m_button_top)
-  {
-    m_button_top = false;
-    return true;
-  }
-  return false;
+  //m_button_state = true;
+  return m_button_top;
 }
 
 bool ButtonEvent::isButtonMiddlePressed()
 {
-  if(m_button_middle)
-  {
-    m_button_middle = false;
-    return true;
-  }
-  return false;
+  return m_button_middle;
 }
 
 bool ButtonEvent::isButtonBottomPressed()
 {
-  if(m_button_bottom)
-  {
-    m_button_bottom = false;
-    return true;
-  }
-  return false;
+  return m_button_bottom;
 }
 
-void ButtonEvent::setInternalState(int state)
+void ButtonEvent::setInternalState(int state, bool update)
 {
 	//nothing to do here!
 }

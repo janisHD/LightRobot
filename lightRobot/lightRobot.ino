@@ -5,59 +5,57 @@
 #include <OrangutanPushbuttons.h>
 #include <OrangutanLCD.h>
 #include "ButtonEvent.h"
+#include "LCDEvent.h"
 
-#define SLOW_ACTION 100
+#define SLOW_ACTION 150
 #define MIDDLE_ACTION 25
 #define FAST_ACTION 10
 #define FASTER_ACTION 5
 
 ButtonEvent button_event;
 TimedAction button_action = TimedAction(MIDDLE_ACTION, buttonEvent);
-
-OrangutanLCD lcd_display;
-bool test = false;
+LCDEvent lcd_event_0;
+TimedAction lcd_action_0 = TimedAction(SLOW_ACTION, lcdEvent0);
+LCDEvent lcd_event_1(1);
+TimedAction lcd_action_1 = TimedAction(SLOW_ACTION, lcdEvent1);
 
 void buttonEvent(){
   button_event.onTimeEvent();
 }
 
+void lcdEvent0(){
+  lcd_event_0.onTimeEvent();
+}
+
+void lcdEvent1(){
+  lcd_event_1.onTimeEvent();
+}
+
+OrangutanLCD temp_display;
+
 void setup()
-{
-  
-  lcd_display.clear();
+{  
+  lcd_event_0.setInternalState(LCDEvent::clear, true);
+  lcd_event_0.onTimeEvent();
+  lcd_event_1.setInternalState(LCDEvent::clear, true);
+  lcd_event_1.onTimeEvent();
 }
 
 void loop()
 {
   button_action.check();
-  
-  lcd_display.print("no");
-  lcd_display.gotoXY(0,1);
-  lcd_display.print(button_event.getInternalState());
-  lcd_display.print(TOP_BUTTON);
-  lcd_display.gotoXY(0,0);
-if(button_event.isButtonTopPressed())
-{
-    lcd_display.print("top");
-    delay(1000);
-    lcd_display.clear();
-}
-if(button_event.isButtonMiddlePressed())
-{
-    lcd_display.print("middle");
-    delay(1000);
-    lcd_display.clear();
-}
-if(button_event.isButtonBottomPressed())
-{
-    lcd_display.print("bottom");
-    delay(1000);
-    lcd_display.clear();
-}
-
-    
-  lcd_display.gotoXY(0,0);
-    
   //delay(1000);
+  lcd_action_0.check();
+  //delay(1000);
+  lcd_action_1.check();
+  //delay(1000);
+  
+  
+  if(button_event.getInternalState())
+    lcd_event_1.setInternalState(LCDEvent::manualControl);
+  else
+    lcd_event_1.setInternalState(LCDEvent::init);
+    
+    lcd_event_0.setInternalState(LCDEvent::remoteControl);
 }
 

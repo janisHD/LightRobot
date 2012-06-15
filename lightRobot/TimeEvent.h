@@ -10,7 +10,7 @@ class TimeEvent
 {
   public:
   
-  TimeEvent(){}
+  TimeEvent():m_update(false){}
   ~TimeEvent(){}
   
   /*! Callback which is executed periodically*/
@@ -18,9 +18,13 @@ class TimeEvent
   /*! Returns an internal state.*/
   virtual int getInternalState()=0;
   /*! Sets an internal state.*/
-  virtual void setInternalState(int state)=0;
+  virtual void setInternalState(int state, bool update = true)=0;
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction()=0;
+  
+  protected:
+  
+  bool m_update;
 };
 
 #endif

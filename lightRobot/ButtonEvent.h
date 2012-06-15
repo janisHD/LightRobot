@@ -22,7 +22,7 @@ class ButtonEvent : public TimeEvent
   /*! Returns an internal state.*/
   virtual int getInternalState();
   /*! Sets an internal state.*/
-  virtual void setInternalState(int state);
+  virtual void setInternalState(int state, bool update=false);
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
   
@@ -33,6 +33,10 @@ class ButtonEvent : public TimeEvent
   private:
   
   OrangutanPushbuttons buttons;
+  
+  /*!Saves if the buttons have been read.*/
+  
+  bool m_button_status;
   
   /*! saves witch buttons were pressed*/
   unsigned char m_buttons_state;
