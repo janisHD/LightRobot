@@ -28,9 +28,16 @@ class ButtonEvent : public TimeEvent
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
   
-  bool isButtonTopPressed();
-  bool isButtonMiddlePressed();
-  bool isButtonBottomPressed();
+    /*! True if the Button is hold down
+  */
+  bool isButtonAHold();
+  bool isButtonBHold();
+  bool isButtonCHold();
+  
+  /*! True after click, but not during hold*/
+  bool isButtonAClicked();//Top
+  bool isButtonBClicked();//Middle
+  bool isButtonCClicked();//Bottom
   
   private:
   
@@ -40,18 +47,21 @@ class ButtonEvent : public TimeEvent
   
   bool m_button_status;
   
-  /*! saves witch buttons were pressed*/
+  /*! saves witch buttons were clicked/are hold*/
   unsigned char m_buttons_state;
   
-  /*!Indicator if ANY button was pressed*/
-  bool m_button_pressed;
+  /*!Indicator if ANY button was clicked*/
+  bool m_button_clicked;
   
   /*!Saves the status of the buttons*/
   
-  bool m_button_top;
-  bool m_button_middle;
-  bool m_button_bottom;
+  bool m_button_A_clicked;
+  bool m_button_B_clicked;
+  bool m_button_C_clicked;
   
+  bool m_button_A_hold;
+  bool m_button_B_hold;
+  bool m_button_C_hold;
 };
 
 #endif

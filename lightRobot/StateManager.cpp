@@ -30,6 +30,7 @@ void StateManager::manageState()
   if(m_state != m_old_state)
      {//on state change
        m_update_lcd = true;//On state change -> update lcd
+       m_motor_event->stopMotors();
        m_old_state = m_state;
      }
    switch (m_state)
@@ -43,9 +44,9 @@ void StateManager::manageState()
          m_update_lcd = false;
        }
        
-       if(m_button_event->isButtonBottomPressed())//Button A TODO: Rename to A, B, C
+       if(m_button_event->isButtonAClicked())//Button A TODO: Rename to A, B, C
          m_state = remoteControl;
-       if(m_button_event->isButtonMiddlePressed())
+       if(m_button_event->isButtonBClicked())
          m_state = manualControl;
        
        break;
@@ -58,8 +59,7 @@ void StateManager::manageState()
          m_lcd_event_1->setInternalState(LCDEvent::init_options);
          m_update_lcd = false;
        }
-       
-       if(m_button_event->isButtonMiddlePressed())
+       if(m_button_event->isButtonBClicked())
          m_state = manualControl;
        break;
      }
@@ -72,15 +72,13 @@ void StateManager::manageState()
          m_lcd_event_1->setFreePaintString("ML  MR  ");
          m_update_lcd = false;
        }
-       if(m_button_event->isButtonMiddlePressed())
+       if(m_button_event->isButtonBClicked())
        {//middle Button increases speed
-         m_lcd_event_0->setInternalState(LCDEvent::init);
-         m_motor_event->alterSpeed(25);
+         m_motor_event->alterSpeed(20);
+         m_lcd_event_1->setFreePaintString(String("ML") + String(m_motor_event->getSpeedMotorLeft() + String("MR") + String(m_motor_event->getSpeedMotorRight())));
        }
-         
-       m_lcd_event_1->setFreePaintString(String("ML") + String(m_motor_event->getSpeedMotorLeft() + String("MR") + String(m_motor_event->getSpeedMotorRight())));
        
-       if(m_button_event->isButtonBottomPressed())
+       if(m_button_event->isButtonAClicked())
          m_state = remoteControl;
        break;
      }

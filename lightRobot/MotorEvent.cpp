@@ -27,6 +27,12 @@ void MotorEvent::onTimeEvent()
   m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
 }
 
+void MotorEvent::stopMotors()
+{
+  setDirection(0);
+  setSpeed(0);
+}
+
 char MotorEvent::getSpeed()
 {
   return m_speed_external;

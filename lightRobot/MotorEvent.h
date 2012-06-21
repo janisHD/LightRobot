@@ -27,6 +27,9 @@ class MotorEvent : public TimeEvent
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
   
+  
+  void stopMotors();
+  
   /*! Set the speed with a value range from [-127, 127]. This will be converted to a range from [-255, 255]*/
   void setSpeed(char speed);
   
