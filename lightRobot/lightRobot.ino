@@ -4,9 +4,11 @@
 #include <Wire.h>
 #include <OrangutanPushbuttons.h>
 #include <OrangutanLCD.h>
+#include <OrangutanMotors.h>
 #include "ButtonEvent.h"
 #include "LCDEvent.h"
 #include "BlueToothEvent.h"
+#include "MotorEvent.h"
 #include "StateManager.h"
 
 #define SLOW_ACTION 150
@@ -22,6 +24,8 @@ LCDEvent lcd_event_1(1);
 TimedAction lcd_action_1 = TimedAction(SLOW_ACTION, lcdEvent1);
 BlueToothEvent bt_event;
 TimedAction bt_action = TimedAction(FAST_ACTION, btEvent);
+MotorEvent motor_event;
+TimedAction motor_action = TimedAction(FAST_ACTION, motorEvent);
 
 void buttonEvent(){
   button_event.onTimeEvent();
@@ -39,7 +43,11 @@ void btEvent(){
   bt_event.onTimeEvent();
 }
 
-StateManager state_manager(&bt_event, &lcd_event_0, &lcd_event_1, &button_event);
+void motorEvent(){
+  motor_event.onTimeEvent();
+}
+
+StateManager state_manager(&motor_event, &bt_event, &lcd_event_0, &lcd_event_1, &button_event);
 
 void setup()
 {  
@@ -55,6 +63,7 @@ void loop()
   lcd_action_0.check();
   lcd_action_1.check();
   bt_action.check();
+  motor_action.check();
   
   state_manager.manageState();
   

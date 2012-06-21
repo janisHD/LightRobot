@@ -7,12 +7,15 @@
 #define REMOTE_CONTROL_STRING "rem cont"
 #define MANUAL_CONTROL_STRING "man cont"
 
+#define PAINT_BUFFER_LENGTH 9
+
  LCDEvent::LCDEvent(int row):
  TimeEvent(),
  m_old_internal_state(clear),
  m_new_internal_state(clear),
  m_drawing_row(row),
- m_drawed_chars(0)
+ m_drawed_chars(0),
+ m_free_paint_string("aaaaaaaa")
 {
 }
 
@@ -53,9 +56,15 @@ void LCDEvent::onTimeEvent()
 				afterPaint(paint(REMOTE_CONTROL_STRING));
 				break;
 			}
+                        case freePaint:
+                        {
+                          afterPaint(paint(m_free_paint_string));
+                          break;
+                        }
 			default:
 			{
 				afterPaint(paint(ERROR_STRING));
+                                delay(1000);
 				break;
 			}
                   }
@@ -85,6 +94,12 @@ unsigned char LCDEvent::paint(const char* message)
 	  m_lcd_display.print(white_space);
 	}
 	return message_length;//should be only the real length of the message, else the message would ever grow longer!
+}
+
+void LCDEvent::setFreePaintString(String free_paint_string)
+{
+  free_paint_string.toCharArray(m_free_paint_string, PAINT_BUFFER_LENGTH);
+  m_update = true;
 }
 
 unsigned char LCDEvent::getInternalState()

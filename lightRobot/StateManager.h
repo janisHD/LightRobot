@@ -1,5 +1,6 @@
 /*! \file StateManager.h Implementation of the global statemanager.*/
 
+#include "MotorEvent.h"
 #include "BlueToothEvent.h"
 #include "LCDEvent.h"
 #include "ButtonEvent.h"
@@ -15,7 +16,7 @@ class StateManager
   public:
   
   StateManager();
-  StateManager(BlueToothEvent *bt_event,  LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event);
+  StateManager(MotorEvent *motor_event, BlueToothEvent *bt_event,  LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event);
   ~StateManager(){}
   
   void manageState();
@@ -31,7 +32,11 @@ class StateManager
   private:
   
   State m_state;
+  State m_old_state;
   
+  bool m_update_lcd;
+  
+  MotorEvent *m_motor_event;
   BlueToothEvent *m_bt_event;
   LCDEvent *m_lcd_event_0;
   LCDEvent *m_lcd_event_1;

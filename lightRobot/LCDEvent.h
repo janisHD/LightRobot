@@ -25,6 +25,8 @@ class LCDEvent : public TimeEvent
   virtual void setInternalState(unsigned char state, bool update=false);
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
+  /*! Sets a string which is then painted on the LCD (if correct mode is set -> freePaint)*/
+  void setFreePaintString(String free_paint_string);
   
   public:
   
@@ -37,7 +39,8 @@ class LCDEvent : public TimeEvent
 	remoteControl,
 	but_A,
 	but_B,
-	but_C
+	but_C,
+        freePaint
 	};
 	
   private:
@@ -70,6 +73,8 @@ class LCDEvent : public TimeEvent
   /*! Saves the number of characters*/
   
   unsigned char m_drawed_chars;
+  
+  char* m_free_paint_string;
   
 };
 

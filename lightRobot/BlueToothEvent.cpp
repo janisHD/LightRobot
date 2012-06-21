@@ -15,6 +15,7 @@ void BlueToothEvent::onTimeEvent()
 {	
 	//Code to receive a single data word and store it in m_data field
         //Word consists of 5 chars:
+        
         //[0] -> direction to drive [0-254]
         //[1] -> velocity to drive [0-254]
         //[2] -> desired color for the Light [0-254]

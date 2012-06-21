@@ -2,6 +2,10 @@
 #include "StateManager.h"
 
  StateManager::StateManager():
+ m_state(init),
+ m_old_state(remoteControl),
+ m_update_lcd(true),
+ m_motor_event(NULL),
  m_bt_event(NULL),
  m_lcd_event_0(NULL),
  m_lcd_event_1(NULL),
@@ -9,7 +13,11 @@
 {
 }
 
-StateManager::StateManager(BlueToothEvent *bt_event, LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event):
+StateManager::StateManager(MotorEvent *motor_event, BlueToothEvent *bt_event, LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event):
+ m_state(init),
+ m_old_state(remoteControl),
+ m_update_lcd(true),
+ m_motor_event(motor_event),
 m_bt_event(bt_event),
 m_lcd_event_0(lcd_event_0),
 m_lcd_event_1(lcd_event_1),
@@ -19,14 +27,23 @@ m_button_event(button_event)
 
 void StateManager::manageState()
 {
+  if(m_state != m_old_state)
+     {//on state change
+       m_update_lcd = true;//On state change -> update lcd
+       m_old_state = m_state;
+     }
    switch (m_state)
    {
      case init:
      {
-       m_lcd_event_0->setInternalState(LCDEvent::init);
-       m_lcd_event_1->setInternalState(LCDEvent::init_options);
+       if(m_update_lcd)
+       {
+         m_lcd_event_0->setInternalState(LCDEvent::init);
+         m_lcd_event_1->setInternalState(LCDEvent::init_options);
+         m_update_lcd = false;
+       }
        
-       if(m_button_event->isButtonBottomPressed())
+       if(m_button_event->isButtonBottomPressed())//Button A TODO: Rename to A, B, C
          m_state = remoteControl;
        if(m_button_event->isButtonMiddlePressed())
          m_state = manualControl;
@@ -35,12 +52,36 @@ void StateManager::manageState()
      }
      case remoteControl:
      {
-       m_lcd_event_0->setInternalState(LCDEvent::remoteControl);
+       if(m_update_lcd)
+       {
+         m_lcd_event_0->setInternalState(LCDEvent::remoteControl);
+         m_lcd_event_1->setInternalState(LCDEvent::init_options);
+         m_update_lcd = false;
+       }
+       
+       if(m_button_event->isButtonMiddlePressed())
+         m_state = manualControl;
        break;
      }
      case manualControl:
      {
-       m_lcd_event_0->setInternalState(LCDEvent::manualControl);
+      if(m_update_lcd)
+       {
+         m_lcd_event_0->setInternalState(LCDEvent::manualControl);
+         m_lcd_event_1->setInternalState(LCDEvent::freePaint);
+         m_lcd_event_1->setFreePaintString("ML  MR  ");
+         m_update_lcd = false;
+       }
+       if(m_button_event->isButtonMiddlePressed())
+       {//middle Button increases speed
+         m_lcd_event_0->setInternalState(LCDEvent::init);
+         m_motor_event->alterSpeed(25);
+       }
+         
+       m_lcd_event_1->setFreePaintString(String("ML") + String(m_motor_event->getSpeedMotorLeft() + String("MR") + String(m_motor_event->getSpeedMotorRight())));
+       
+       if(m_button_event->isButtonBottomPressed())
+         m_state = remoteControl;
        break;
      }
      default:
