@@ -13,10 +13,11 @@
 {
 }
 
-StateManager::StateManager(MotorEvent *motor_event, BlueToothEvent *bt_event, LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event):
+StateManager::StateManager(LightEvent *light_event, MotorEvent *motor_event, BlueToothEvent *bt_event, LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event):
  m_state(init),
  m_old_state(remoteControl),
  m_update_lcd(true),
+ m_light_event(light_event),
  m_motor_event(motor_event),
 m_bt_event(bt_event),
 m_lcd_event_0(lcd_event_0),
@@ -76,6 +77,10 @@ void StateManager::manageState()
        {//middle Button increases speed
          m_motor_event->alterSpeed(20);
          m_lcd_event_1->setFreePaintString(String("ML") + String(m_motor_event->getSpeedMotorLeft() + String("MR") + String(m_motor_event->getSpeedMotorRight())));
+       }
+       if(m_button_event->isButtonCClicked())
+       {
+         m_light_event->setInternalState(LightEvent::blink, true);
        }
        
        if(m_button_event->isButtonAClicked())

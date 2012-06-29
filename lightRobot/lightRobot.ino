@@ -9,8 +9,9 @@
 #include "LCDEvent.h"
 #include "BlueToothEvent.h"
 #include "MotorEvent.h"
+#include "LightEvent.h"
 #include "StateManager.h"
-#include "SoftI2Master.h"
+//#include "SoftI2Master.h"
 
 #define SLOW_ACTION 150
 #define MIDDLE_ACTION 25
@@ -27,6 +28,9 @@ BlueToothEvent bt_event;
 TimedAction bt_action = TimedAction(FAST_ACTION, btEvent);
 MotorEvent motor_event;
 TimedAction motor_action = TimedAction(FAST_ACTION, motorEvent);
+LightEvent light_event;
+TimedAction light_action = TimedAction(SLOW_ACTION, lightEvent);
+
 
 void buttonEvent(){
   button_event.onTimeEvent();
@@ -48,7 +52,11 @@ void motorEvent(){
   motor_event.onTimeEvent();
 }
 
-StateManager state_manager(&motor_event, &bt_event, &lcd_event_0, &lcd_event_1, &button_event);
+void lightEvent(){
+  light_event.onTimeEvent();
+}
+
+StateManager state_manager(&light_event, &motor_event, &bt_event, &lcd_event_0, &lcd_event_1, &button_event);
 
 void setup()
 {  
@@ -65,6 +73,7 @@ void loop()
   lcd_action_1.check();
   bt_action.check();
   motor_action.check();
+  light_action.check();
   
   state_manager.manageState();
   
