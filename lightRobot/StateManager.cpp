@@ -44,7 +44,7 @@ void StateManager::manageState()
          m_update_lcd = false;
        }
        
-       if(m_button_event->isButtonAClicked())//Button A TODO: Rename to A, B, C
+       if(m_button_event->isButtonAClicked())
          m_state = remoteControl;
        if(m_button_event->isButtonBClicked())
          m_state = manualControl;

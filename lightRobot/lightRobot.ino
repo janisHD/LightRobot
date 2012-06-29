@@ -10,6 +10,7 @@
 #include "BlueToothEvent.h"
 #include "MotorEvent.h"
 #include "StateManager.h"
+#include "SoftI2Master.h"
 
 #define SLOW_ACTION 150
 #define MIDDLE_ACTION 25
