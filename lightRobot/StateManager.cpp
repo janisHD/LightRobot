@@ -70,9 +70,15 @@ void StateManager::manageState()
        {
          m_lcd_event_0->setInternalState(LCDEvent::manualControl);
          m_lcd_event_1->setInternalState(LCDEvent::freePaint);
-         m_lcd_event_1->setFreePaintString("ML  MR  ");
+         //m_lcd_event_1->setFreePaintString("ML  MR  ");
          m_update_lcd = false;
        }
+       
+       //Read Data from BT
+        m_data_packet = m_bt_event->getDataPacket();
+        m_lcd_event_1->setFreePaintString(String(m_data_packet.speed));
+        
+       
        if(m_button_event->isButtonBClicked())
        {//middle Button increases speed
          m_motor_event->alterSpeed(20);
@@ -80,7 +86,7 @@ void StateManager::manageState()
        }
        if(m_button_event->isButtonCClicked())
        {
-         m_light_event->setInternalState(LightEvent::blink, true);
+         //m_light_event->setInternalState(LightEvent::blink, true);
        }
        
        if(m_button_event->isButtonAClicked())

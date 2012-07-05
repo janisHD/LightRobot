@@ -73,7 +73,7 @@ void loop()
   lcd_action_1.check();
   bt_action.check();
   motor_action.check();
-  light_action.check();
+  //light_action.check();
   
   state_manager.manageState();
   

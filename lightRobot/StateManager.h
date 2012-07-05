@@ -43,6 +43,8 @@ class StateManager
   LCDEvent *m_lcd_event_0;
   LCDEvent *m_lcd_event_1;
   ButtonEvent *m_button_event;
+  
+  BlueToothEvent::DataPacket m_data_packet;
 };
 
 #endif

@@ -5,10 +5,16 @@
  TimeEvent()
 {
   //init data array
-  m_data[mode] = 0;
+  
   m_data[velocity] = 0;
   m_data[direction] = 0;
   m_data[color] = 0;
+  m_data[mode] = 0;
+  
+  processData(m_data);
+  
+  //Serial connection
+  Serial.begin(9600);
 }
 
 void BlueToothEvent::onTimeEvent()
@@ -22,20 +28,48 @@ void BlueToothEvent::onTimeEvent()
         //[3] -> internal mode (see responsible class)[0-254]
         //[5] -> termination value [255] is it necessary?
         
-        //ONLY STUB CODE:
-        m_data[mode] = 0;
-        m_data[velocity] = 0;
-        m_data[direction] = 0;
-        m_data[color] = 0;
+        if(Serial.available() >= DATA_WORD_LENGTH)
+        {//minimum number of bytes must be available in the buffer
+          while(Serial.available() > DATA_WORD_LENGTH)
+            Serial.read();//clear buffer to last 4 bits
+          
+          m_data[velocity] = (unsigned char)Serial.read();
+          m_data[direction] = (unsigned char)Serial.read();
+          m_data[color] = (unsigned char)Serial.read();
+          m_data[mode] = (unsigned char)Serial.read();
+          
+          processData(m_data);
+          
+        }
+        
+        
 }
 
-unsigned char BlueToothEvent::getData(unsigned char field)
+void BlueToothEvent::processData(unsigned char* data)
 {
-  if(field <= mode)
-    return m_data[field];
-  else
-    return 0;
+  m_data_packet.speed = data[velocity];
+  m_data_packet.direction = data[direction];
+  m_data_packet.color[0] = data[color] & B00000011;
+  m_data_packet.color[1] = (data[color] & B00001100)>>2;
+  m_data_packet.color[2] = (data[color] & B00110000)>>4;
+  m_data_packet.color[3] = (data[color] & B11000000)>>6;
+  m_data_packet.mode[0] = data[mode] & B00001111;
+  m_data_packet.mode[1] = (data[mode] & B11110000)>>4;
 }
+
+
+BlueToothEvent::DataPacket BlueToothEvent::getDataPacket()
+{
+  return m_data_packet;
+}
+
+//unsigned char BlueToothEvent::getData(unsigned char field)
+//{
+//  if(field <= mode)
+//    return m_data[field];
+//  else
+//    return 0;
+//}
 
 unsigned char BlueToothEvent::getInternalState()
 {

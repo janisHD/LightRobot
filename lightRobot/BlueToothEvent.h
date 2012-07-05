@@ -16,6 +16,13 @@ class BlueToothEvent : public TimeEvent
 {
   public:
   
+  struct DataPacket {
+  int speed;
+  int direction;
+  int color[4]; // [3]==blue [2]==green [1]==red [0]==brightness
+  int mode[2]; // [1]==color mode (0000->remote, 0001->blink, 0010->random, 0011->random&blink)   [0]==drive mode (0000->remote, 0001->random) 
+};
+  
   BlueToothEvent();
   ~BlueToothEvent(){};
   
@@ -28,8 +35,20 @@ class BlueToothEvent : public TimeEvent
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
   
-  unsigned char getData(unsigned char field);
+  /*! To get the received data in the DataPacket struct
+  \return The most recent data received via Serial connection
+  */
+  DataPacket getDataPacket();
   
+  
+
+private:
+
+/*! Processes the array with a 4 byte data word and saves the information in the DataPacket field.
+\param data the array (must have the length of 4 bytes)
+*/
+void processData(unsigned char* data);
+
   private:
   
   enum Data{
@@ -40,6 +59,8 @@ class BlueToothEvent : public TimeEvent
   };
   
   unsigned char m_data[DATA_WORD_LENGTH];
+  
+  struct DataPacket m_data_packet;
   
 };
 
