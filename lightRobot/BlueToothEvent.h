@@ -17,8 +17,8 @@ class BlueToothEvent : public TimeEvent
   public:
   
   struct DataPacket {
-  int speed;
-  int direction;
+  char speed;
+  char direction;
   int color[4]; // [3]==blue [2]==green [1]==red [0]==brightness
   int mode[2]; // [1]==color mode (0000->remote, 0001->blink, 0010->random, 0011->random&blink)   [0]==drive mode (0000->remote, 0001->random) 
 };

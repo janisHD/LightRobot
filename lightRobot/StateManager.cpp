@@ -57,10 +57,20 @@ void StateManager::manageState()
        if(m_update_lcd)
        {
          m_lcd_event_0->setInternalState(LCDEvent::remoteControl);
-         m_lcd_event_1->setInternalState(LCDEvent::init_options);
+         m_lcd_event_1->setInternalState(LCDEvent::freePaint);
          m_update_lcd = false;
        }
-       if(m_button_event->isButtonBClicked())
+       
+       
+       m_data_packet = m_bt_event->getDataPacket();
+       //m_motor_event->setSpeed(m_data_packet.speed);
+       m_lcd_event_1->setFreePaintString(String("S") + 
+                                         String( (int)m_data_packet.speed)+ 
+                                         String("D") + 
+                                         String((int)m_data_packet.direction));       
+       //m_lcd_event_1->setFreePaintString(String("L") + String(m_motor_event->getSpeedMotorLeft() + String("R") + String(m_motor_event->getSpeedMotorRight())));
+       
+       if(m_button_event->isButtonAClicked())
          m_state = manualControl;
        break;
      }
@@ -70,13 +80,13 @@ void StateManager::manageState()
        {
          m_lcd_event_0->setInternalState(LCDEvent::manualControl);
          m_lcd_event_1->setInternalState(LCDEvent::freePaint);
-         //m_lcd_event_1->setFreePaintString("ML  MR  ");
+         //m_lcd_event_1->setFreePaintString("L  R  ");
          m_update_lcd = false;
        }
        
        //Read Data from BT
         m_data_packet = m_bt_event->getDataPacket();
-        m_lcd_event_1->setFreePaintString(String(m_data_packet.speed));
+        m_lcd_event_1->setFreePaintString(String(m_data_packet.mode[1]));
         
        
        if(m_button_event->isButtonBClicked())

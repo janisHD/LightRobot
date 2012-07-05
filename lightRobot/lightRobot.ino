@@ -64,6 +64,8 @@ void setup()
   lcd_event_0.onTimeEvent();
   lcd_event_1.setInternalState(LCDEvent::clear, true);
   lcd_event_1.onTimeEvent();
+  
+  Serial.begin(9600);
 }
 
 void loop()

@@ -14,7 +14,7 @@
   processData(m_data);
   
   //Serial connection
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void BlueToothEvent::onTimeEvent()
@@ -33,10 +33,10 @@ void BlueToothEvent::onTimeEvent()
           while(Serial.available() > DATA_WORD_LENGTH)
             Serial.read();//clear buffer to last 4 bits
           
-          m_data[velocity] = (unsigned char)Serial.read();
-          m_data[direction] = (unsigned char)Serial.read();
-          m_data[color] = (unsigned char)Serial.read();
-          m_data[mode] = (unsigned char)Serial.read();
+          m_data[velocity] = (char)Serial.read();
+          m_data[direction] = (char)Serial.read();
+          m_data[color] = (char)Serial.read();
+          m_data[mode] = (char)Serial.read();
           
           processData(m_data);
           
