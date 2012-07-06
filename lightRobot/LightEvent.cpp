@@ -139,25 +139,37 @@ void LightEvent::initLight()
 
 void LightEvent::setRed(byte value)
 {
-  m_red = value;
+  m_red = mapLightValue(value);
   m_update = true;
 }
 
 void LightEvent::setGreen(byte value)
 {
-  m_green = value;
+  m_green = mapLightValue(value);
   m_update = true;
 }
 
 void LightEvent::setBlue(byte value)
 {
-  m_blue = value;
+  m_blue = mapLightValue(value);
   m_update = true;
 }
 
 void LightEvent::turnOn()
 {
 }
+
+byte LightEvent::mapLightValue(byte value)
+{
+    if(value == 0)
+      return 0;
+    if(value == 1)
+      return 0x64;//100
+    if(value == 2)
+      return 0xC8;//200
+    if(value == 4)
+      return 0xff;
+  }
 
 void LightEvent::setColor()
 {
@@ -170,3 +182,5 @@ void LightEvent::setColor()
   m_wire->endTransmission();
   #endif
 }
+
+

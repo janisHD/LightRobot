@@ -49,6 +49,10 @@ class LightEvent : public TimeEvent
   */
   void  setColor();
   
+  /*! Maps the value from 0-3 to a value between 0-255
+  */
+  byte mapLightValue(byte value);
+  
   /*! Turn the LED on or of*/
   
   void turnOn();
