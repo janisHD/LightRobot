@@ -7,6 +7,8 @@
 #ifndef LIGHT_EVENT_H
 #define LIGHT_EVENT_H
 
+#define SEND 1
+
 /*! \class LightEvent
 Sets the Light (Color, Brightnes, etc..) periodically.
 
@@ -16,6 +18,7 @@ class LightEvent : public TimeEvent
   public:
   
   LightEvent();
+  LightEvent(SoftI2CMaster * wire);
   ~LightEvent(){};
   
   /*! Callback which is executed periodically*/
@@ -50,6 +53,7 @@ class LightEvent : public TimeEvent
   
   void turnOn();
   
+  public:
   /*! Initialises the LEDs (stops the standard script, etc.)*/
   void initLight();
   
@@ -57,8 +61,9 @@ class LightEvent : public TimeEvent
   
   /*! Sends the data over I2C.
   */
-  
-  SoftI2CMaster m_wire;
+  #if SEND
+  SoftI2CMaster *m_wire;
+  #endif
   
   /*! Determines if the LED should blink, shine, or change their color randomly
   */

@@ -1,4 +1,5 @@
-/*! \file BlueToothEvent.h checks periodically if new data over BT has been received.*/
+/*! \file BlueToothEvent.h checks periodically if new data over BT has been received.
+*/
 
 #include <Arduino.h>
 #include <OrangutanLCD.h>
@@ -10,7 +11,8 @@
 #define DATA_WORD_LENGTH 4
 
 /*! \class BlueToothEvent
-retrieves and stores the received BT data.
+retrieves and stores the received BT data. The data should come over the serialport, it must be started in "setup".
+The struct DataPacket publishes the parsed data for the Statemanager.
 */
 class BlueToothEvent : public TimeEvent
 {
@@ -40,6 +42,8 @@ class BlueToothEvent : public TimeEvent
   */
   DataPacket getDataPacket();
   
+  bool m_new_data_present;
+  
   
 
 private:
@@ -52,8 +56,8 @@ void processData(unsigned char* data);
   private:
   
   enum Data{
-    direction=0,//direction to drive
-    velocity,//desired velocity
+    velocity=0,//desired velocity
+    direction,//direction to drive
     color,//desired color of the LEDs
     mode,//the different modes: remote, random, blink
   };

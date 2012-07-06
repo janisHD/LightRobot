@@ -2,7 +2,8 @@
 #include "BlueToothEvent.h"
 
  BlueToothEvent::BlueToothEvent():
- TimeEvent()
+ TimeEvent(),
+ m_new_data_present(false)
 {
   //init data array
   
@@ -12,37 +13,32 @@
   m_data[mode] = 0;
   
   processData(m_data);
-  
   //Serial connection
-  //Serial.begin(9600);
 }
 
 void BlueToothEvent::onTimeEvent()
 {	
 	//Code to receive a single data word and store it in m_data field
-        //Word consists of 5 chars:
+        //Word consists of 4 chars (see the docu for further explanations): 
         
         //[0] -> direction to drive [0-254]
         //[1] -> velocity to drive [0-254]
         //[2] -> desired color for the Light [0-254]
         //[3] -> internal mode (see responsible class)[0-254]
-        //[5] -> termination value [255] is it necessary?
         
         if(Serial.available() >= DATA_WORD_LENGTH)
         {//minimum number of bytes must be available in the buffer
           while(Serial.available() > DATA_WORD_LENGTH)
-            Serial.read();//clear buffer to last 4 bits
+            Serial.read();//clear buffer except the last 4 bits
           
           m_data[velocity] = (char)Serial.read();
           m_data[direction] = (char)Serial.read();
           m_data[color] = (char)Serial.read();
           m_data[mode] = (char)Serial.read();
           
-          processData(m_data);
-          
+          processData(m_data); 
+          m_new_data_present = true;
         }
-        
-        
 }
 
 void BlueToothEvent::processData(unsigned char* data)
@@ -60,6 +56,7 @@ void BlueToothEvent::processData(unsigned char* data)
 
 BlueToothEvent::DataPacket BlueToothEvent::getDataPacket()
 {
+  m_new_data_present = false;
   return m_data_packet;
 }
 

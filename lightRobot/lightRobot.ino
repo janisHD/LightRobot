@@ -9,14 +9,25 @@
 #include "LCDEvent.h"
 #include "BlueToothEvent.h"
 #include "MotorEvent.h"
-#include "LightEvent.h"
 #include "StateManager.h"
+//#include <Wire.h>
+#include "LightEvent.h"
 //#include "SoftI2Master.h"
 
 #define SLOW_ACTION 150
-#define MIDDLE_ACTION 25
+#define MIDDLE_ACTION 75
+#define MOTOR_ACTION 150
 #define FAST_ACTION 10
 #define FASTER_ACTION 5
+
+
+#define LCD_ATTACHED 0
+#define MOTOR_ACTIVATED 1
+
+#define LIGHT_ACTIVATED 1
+
+SoftI2CMaster m_wire(2,4);
+
 
 ButtonEvent button_event;
 TimedAction button_action = TimedAction(MIDDLE_ACTION, buttonEvent);
@@ -25,10 +36,11 @@ TimedAction lcd_action_0 = TimedAction(SLOW_ACTION, lcdEvent0);
 LCDEvent lcd_event_1(1);
 TimedAction lcd_action_1 = TimedAction(SLOW_ACTION, lcdEvent1);
 BlueToothEvent bt_event;
-TimedAction bt_action = TimedAction(FAST_ACTION, btEvent);
+TimedAction bt_action = TimedAction(MIDDLE_ACTION, btEvent);
 MotorEvent motor_event;
-TimedAction motor_action = TimedAction(FAST_ACTION, motorEvent);
-LightEvent light_event;
+TimedAction motor_action = TimedAction(MOTOR_ACTION, motorEvent);
+LightEvent light_event(&m_wire);
+//LightEvent light_event;
 TimedAction light_action = TimedAction(SLOW_ACTION, lightEvent);
 
 
@@ -66,19 +78,24 @@ void setup()
   lcd_event_1.onTimeEvent();
   
   Serial.begin(9600);
+
 }
 
 void loop()
 {
   button_action.check();
+  #if LCD_ATTACHED
   lcd_action_0.check();
   lcd_action_1.check();
+  #endif
   bt_action.check();
+  #if MOTOR_ACTIVATED
   motor_action.check();
-  //light_action.check();
+  #endif
+  #if LIGHT_ACTIVATED
+  light_action.check();
+  #endif
   
   state_manager.manageState();
-  
-  
 }
 

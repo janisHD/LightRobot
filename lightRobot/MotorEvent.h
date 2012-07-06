@@ -31,25 +31,26 @@ class MotorEvent : public TimeEvent
   void stopMotors();
   
   /*! Set the speed with a value range from [-127, 127]. This will be converted to a range from [-255, 255]*/
-  void setSpeed(char speed);
+  void setSpeed(short speed);
   
   /*! Adds the value (can be negative) to the current speed value*/
   void alterSpeed(char value);
   
-  void setDirection(char direction);
+  void setDirection(short direction);
   
   char getSpeed();
   
   /*In a Range between [0,99] 0 -> max backward...*/
-  unsigned char getSpeedMotorLeft();
+  short getSpeedMotorLeft();
   
-  unsigned char getSpeedMotorRight();
+  short getSpeedMotorRight();
   
-  char getDirection();
+  short getDirection();
   
   private:
   
   void calcMotorSpeed();
+  short restrictSpeed(short speed);
   
   private:
   
@@ -57,19 +58,21 @@ class MotorEvent : public TimeEvent
   
   /*! The speed of the robot [-255, 255]
   */
-  int m_speed;
+  short m_speed;
   
   /*! The corresponding external value [-127, 127]
   */
-  char m_speed_external;
-  /*! The driving direction (or turn rate) in radians [-PI, +PI]
+  short m_speed_external;
+  /*! The driving direction (or turn rate) in radius
   */
-  float m_direction;
+  short m_direction;
   
   /*! The speed for the left motor [-255, 255]*/
-  int m_speed_motor_left;
+  short m_speed_motor_left;
   /*! The speed for the right motor [-255, 255]*/
-  int m_speed_motor_right;
+  short m_speed_motor_right;
+  
+  bool m_update_motors;
 };
 
 #endif

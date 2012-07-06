@@ -55,19 +55,35 @@ void StateManager::manageState()
      case remoteControl:
      {
        if(m_update_lcd)
-       {
+       {//only once
          m_lcd_event_0->setInternalState(LCDEvent::remoteControl);
          m_lcd_event_1->setInternalState(LCDEvent::freePaint);
+         
+         m_light_event->setRed((byte)0xff);
+         m_light_event->setGreen((byte)0x00);
+         m_light_event->setBlue((byte)0x00);
          m_update_lcd = false;
        }
        
-       
+       //acquire new data from bt
+       if(m_bt_event->m_new_data_present)
+       {
        m_data_packet = m_bt_event->getDataPacket();
-       //m_motor_event->setSpeed(m_data_packet.speed);
-       m_lcd_event_1->setFreePaintString(String("S") + 
-                                         String( (int)m_data_packet.speed)+ 
-                                         String("D") + 
-                                         String((int)m_data_packet.direction));       
+       
+       //set values for the motors
+       m_motor_event->setSpeed(m_data_packet.speed);
+       m_motor_event->setDirection(m_data_packet.direction);
+       
+       //set values for the light
+       m_light_event->setRed((byte)m_data_packet.color[1]);
+       m_light_event->setGreen((byte)m_data_packet.color[2]);
+       m_light_event->setBlue((byte)m_data_packet.color[3]);
+     }
+       
+       /*m_lcd_event_1->setFreePaintString(String("L") + 
+                                         String( m_motor_event->getSpeedMotorLeft())+ 
+                                         String("R") + 
+                                         String(m_motor_event->getSpeedMotorRight()));       */
        //m_lcd_event_1->setFreePaintString(String("L") + String(m_motor_event->getSpeedMotorLeft() + String("R") + String(m_motor_event->getSpeedMotorRight())));
        
        if(m_button_event->isButtonAClicked())
@@ -85,8 +101,8 @@ void StateManager::manageState()
        }
        
        //Read Data from BT
-        m_data_packet = m_bt_event->getDataPacket();
-        m_lcd_event_1->setFreePaintString(String(m_data_packet.mode[1]));
+       // m_data_packet = m_bt_event->getDataPacket();
+        //m_lcd_event_1->setFreePaintString(String(m_data_packet.mode[1]));
         
        
        if(m_button_event->isButtonBClicked())
@@ -96,7 +112,9 @@ void StateManager::manageState()
        }
        if(m_button_event->isButtonCClicked())
        {
-         //m_light_event->setInternalState(LightEvent::blink, true);
+         m_light_event->setRed((byte)0x00);
+         m_light_event->setGreen((byte)0xff);
+         m_light_event->setBlue((byte)0x00);
        }
        
        if(m_button_event->isButtonAClicked())

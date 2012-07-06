@@ -7,6 +7,8 @@
 #ifndef LCD_EVENT_H
 #define LCD_EVENT_H
 
+#define USE_LCD 0
+
 /*! \class LCDEvent
 Updates the LCD-Display periodically, accordingly to the state which is set from Extern.
 */
@@ -58,7 +60,9 @@ class LCDEvent : public TimeEvent
   
   private:
   
+  #if USE_LCD
   OrangutanLCD m_lcd_display;
+  #endif
   
   /*! Saves the old internal state*/
   State m_old_internal_state;

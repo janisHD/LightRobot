@@ -20,6 +20,8 @@ class StateManager
   StateManager(LightEvent *light_event, MotorEvent *motor_event, BlueToothEvent *bt_event,  LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event);
   ~StateManager(){}
   
+  /*! The central part of the software. This method is executed over and over again. In this place the data is managed and distributed for the several processes like the motors, the light, the buttons and the bt-connection
+  */
   void manageState();
   
   private:

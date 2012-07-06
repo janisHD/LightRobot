@@ -1,16 +1,28 @@
 
 #include "LightEvent.h"
 
-//TODO: change to pin 4 and 6 when used together with bt.
-#define SDA_I2C 1
-#define SCL_I2C 0
+//TODO: change to pin PD2 (4 on the LCD Port) and PD4 (6 ont the LCD Port) when used together with bt.
+#define BT_AVAILABLE 1
+
+
+#if BT_AVAILABLE
+  #define SDA_I2C 2
+  #define SCL_I2C 4
+#else
+  #define SDA_I2C 1
+  #define SCL_I2C 0
+#endif
+
 #define BLINK_DURATION 10
 #define BLINK_ADRESS 0x09
-#define STOP_SCRIPTS 'n'
+#define STOP_SCRIPTS 'o'
+#define SET_COLOR 'n'
 
  LightEvent::LightEvent():
  TimeEvent(),
- m_wire(SDA_I2C, SCL_I2C),
+ #if SEND
+  m_wire(new SoftI2CMaster(SDA_I2C, SCL_I2C)),
+#endif
  m_state(init),
  m_light_state(false),
  m_brightness(0),
@@ -21,6 +33,24 @@
 {
   m_update = true;
 }
+
+LightEvent::LightEvent(SoftI2CMaster *wire):
+TimeEvent(),
+ #if SEND
+  m_wire(wire),
+#endif
+ m_state(init),
+ m_light_state(false),
+ m_brightness(0),
+ m_red(0),
+ m_green(0xff),
+ m_blue(0),
+ m_blink_counter(0)
+{
+  m_update = true;
+}
+
+
 
 void LightEvent::onTimeEvent()
 {
@@ -85,9 +115,44 @@ void LightEvent::executeAction()
 
 void LightEvent::initLight()
 {
-  m_wire.beginTransmission(BLINK_ADRESS);
-  m_wire.send(STOP_SCRIPTS);
-  m_wire.endTransmission();
+ #if SEND
+ //   delay(1000);
+  m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send(STOP_SCRIPTS);
+  m_wire->endTransmission();
+  delay(100);
+  m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send(SET_COLOR);
+  m_wire->send(0x01);
+  m_wire->send(0x01);
+  m_wire->send(0xff);
+  m_wire->endTransmission();
+ // delay(1000);
+ /* m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send('n');
+  m_wire->send(0x01);
+  m_wire->send(0x01);
+  m_wire->send(0xff);
+  m_wire->endTransmission();*/
+ #endif
+}
+
+void LightEvent::setRed(byte value)
+{
+  m_red = value;
+  m_update = true;
+}
+
+void LightEvent::setGreen(byte value)
+{
+  m_green = value;
+  m_update = true;
+}
+
+void LightEvent::setBlue(byte value)
+{
+  m_blue = value;
+  m_update = true;
 }
 
 void LightEvent::turnOn()
@@ -96,10 +161,12 @@ void LightEvent::turnOn()
 
 void LightEvent::setColor()
 {
-  m_wire.beginTransmission(BLINK_ADRESS);
-  m_wire.send('n'); // c is fade to color
-  m_wire.send(m_red); // value for red channel
-  m_wire.send(m_green); // value for green channel
-  m_wire.send(m_blue); // value for blue channel*/
-  m_wire.endTransmission();
+  #if SEND
+  m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send(SET_COLOR); // c is fade to color
+  m_wire->send(m_red); // value for red channel
+  m_wire->send(m_green); // value for green channel
+  m_wire->send(m_blue); // value for blue channel*/
+  m_wire->endTransmission();
+  #endif
 }

@@ -26,13 +26,17 @@ void LCDEvent::onTimeEvent()
                 m_update = false;
 		m_old_internal_state = m_new_internal_state;
 
+                #if USE_LCD
                 m_lcd_display.gotoXY(0,m_drawing_row);
+                #endif
 		
 		switch (m_old_internal_state)
 		{
 			case clear:
 			{
-				m_lcd_display.clear();
+				#if USE_LCD
+                                m_lcd_display.clear();
+                                #endif
 				afterPaint(0);
 				break;
 			}
@@ -82,7 +86,9 @@ unsigned char LCDEvent::paint(const char* message)
 	unsigned char message_length = String(message).length();
         unsigned char message_diff = 0;
         
+        #if USE_LCD
         m_lcd_display.print(message);
+        #endif
 	if(message_length < m_drawed_chars)
 	{//Whitespaces must be added to overdraw the old message
                 message_diff = m_drawed_chars-message_length;
@@ -90,8 +96,10 @@ unsigned char LCDEvent::paint(const char* message)
                 white_space[message_diff] = '\0';
 		for(int i = message_diff; i > 0; i--)
 			white_space[message_diff-i] = ' ';
-			
+	
+          #if USE_LCD		
 	  m_lcd_display.print(white_space);
+          #endif
 	}
 	return message_length;//should be only the real length of the message, else the message would ever grow longer!
 }
