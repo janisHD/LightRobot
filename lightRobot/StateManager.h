@@ -24,6 +24,11 @@ class StateManager
   */
   void manageState();
   
+  
+  private:
+  
+  byte convertColorMode(byte bt_color_mode);
+  
   private:
   
   enum State{

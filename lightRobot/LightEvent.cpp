@@ -13,10 +13,21 @@
   #define SCL_I2C 0
 #endif
 
-#define BLINK_DURATION 10
+#define BLINK_DURATION 5
+#define RANDOM_DURATION 4
 #define BLINK_ADRESS 0x09
 #define STOP_SCRIPTS 'o'
 #define SET_COLOR 'n'
+#define FADE_COLOR 'c'
+#define FADE_HSB 'h'
+#define RANDOM_HSB 'H'
+#define RANDOM_HUE_RANGE 0x30
+#define RANDOM_BRIGHTNESS_RANGE 0x0f
+#define SATURATION 0xff
+
+#define FAKTOR_HUE 2.5 //map a value between [0,63] to [0-255] (hue space)
+#define FAKTOR_BRIGHTNESS 85 //map [0,3] to [0,255]
+
 
  LightEvent::LightEvent():
  TimeEvent(),
@@ -25,6 +36,7 @@
 #endif
  m_state(init),
  m_light_state(false),
+ m_hue(0),
  m_brightness(0),
  m_red(0),
  m_green(0xff),
@@ -41,6 +53,7 @@ TimeEvent(),
 #endif
  m_state(init),
  m_light_state(false),
+ m_hue(0),
  m_brightness(0),
  m_red(0),
  m_green(0xff),
@@ -67,24 +80,63 @@ void LightEvent::onTimeEvent()
       }
       case shine:
       {
-        setColor();
+        fadeHSB();
         m_update = false;//NOT before the switch
        break; 
       }
       case blink:
       {//Update is never cleared here, because it counts the calls and works as timer
-      if(m_blink_counter == BLINK_DURATION)
+      if(m_blink_counter >= BLINK_DURATION)
       {//only if time is up NEVER clear update!
         m_blink_counter = 0;
-        m_light_state = ~m_light_state;
-        setColor();
+        if(m_light_state)
+         m_light_state = false;
+        else
+         m_light_state = true;
+        //fadeHSB();
         turnOn();
-      } 
+      }
+      else
+       m_blink_counter++;
+       
         break;
       }
       case random:
-      {
-        //nothing to do here
+      {//Update is never cleared here, because it counts the calls and works as timer
+      if(m_blink_counter >= RANDOM_DURATION)
+      {//only if time is up NEVER clear update!
+        m_blink_counter = 0;
+        if(m_light_state)
+         m_light_state = false;
+        else
+         m_light_state = true;
+        //fadeHSB();
+        fadeHSBRandom();
+      }
+      else
+       m_blink_counter++;
+       
+        break;
+      }
+      case random_blink:
+      {//Update is never cleared here, because it counts the calls and works as timer
+      if(m_blink_counter >= BLINK_DURATION)
+      {//only if time is up NEVER clear update!
+        m_blink_counter = 0;
+        if(m_light_state)
+        {
+         m_light_state = false;
+         fadeHSBRandom();
+        }
+        else
+        {
+          turnOn();
+         m_light_state = true;
+        }
+      }
+      else
+       m_blink_counter++;
+       
         break;
       }
       default:
@@ -116,7 +168,6 @@ void LightEvent::executeAction()
 void LightEvent::initLight()
 {
  #if SEND
- //   delay(1000);
   m_wire->beginTransmission(BLINK_ADRESS);
   m_wire->send(STOP_SCRIPTS);
   m_wire->endTransmission();
@@ -127,13 +178,6 @@ void LightEvent::initLight()
   m_wire->send(0x01);
   m_wire->send(0xff);
   m_wire->endTransmission();
- // delay(1000);
- /* m_wire->beginTransmission(BLINK_ADRESS);
-  m_wire->send('n');
-  m_wire->send(0x01);
-  m_wire->send(0x01);
-  m_wire->send(0xff);
-  m_wire->endTransmission();*/
  #endif
 }
 
@@ -155,8 +199,61 @@ void LightEvent::setBlue(byte value)
   m_update = true;
 }
 
+
+void LightEvent::setHSBColor(byte red, byte green, byte blue)
+{
+  setHSB(red, green, blue, m_brightness);
+}
+
+void LightEvent::setHSBBrightness(byte brightness)
+{
+  setHSB(m_hue, brightness);
+}
+
+void LightEvent::setHSB(byte red, byte green, byte blue, byte brightness)
+{
+  setHSB(mapHue(red|green<<2|blue<<4), mapBrightness(brightness));
+}
+
+void LightEvent::setHSB(byte hue, byte brightness)
+{
+  m_hue = hue;
+  m_brightness = brightness;
+  m_update = true;
+}
+
+byte LightEvent::mapHue(byte value)
+{
+  return (byte)(FAKTOR_HUE * (float)value);
+}
+
+byte LightEvent::mapBrightness(byte value)
+{
+  return FAKTOR_BRIGHTNESS * value;
+}
+
 void LightEvent::turnOn()
 {
+   #if SEND
+  if(m_light_state)
+  {
+    m_wire->beginTransmission(BLINK_ADRESS);
+    m_wire->send(FADE_HSB); // c is fade to color
+    m_wire->send(m_hue); // hue
+    m_wire->send(SATURATION); // saturation
+    m_wire->send(m_brightness); // brightness
+    m_wire->endTransmission();
+  }
+  else
+  {
+    m_wire->beginTransmission(BLINK_ADRESS);
+    m_wire->send(FADE_HSB); // c is fade to color
+    m_wire->send(m_hue); // hue
+    m_wire->send(0); // saturation
+    m_wire->send(0); // brightness
+    m_wire->endTransmission();
+  }
+  #endif
 }
 
 byte LightEvent::mapLightValue(byte value)
@@ -179,6 +276,42 @@ void LightEvent::setColor()
   m_wire->send(m_red); // value for red channel
   m_wire->send(m_green); // value for green channel
   m_wire->send(m_blue); // value for blue channel*/
+  m_wire->endTransmission();
+  #endif
+}
+
+void LightEvent::fadeColor()
+{
+  #if SEND
+  m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send(FADE_COLOR); // c is fade to color
+  m_wire->send(m_red); // value for red channel
+  m_wire->send(m_green); // value for green channel
+  m_wire->send(m_blue); // value for blue channel*/
+  m_wire->endTransmission();
+  #endif
+}
+
+void LightEvent::fadeHSB()
+{
+  #if SEND
+  m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send(FADE_HSB); // c is fade to color
+  m_wire->send(m_hue); // hue
+  m_wire->send(SATURATION); // saturation
+  m_wire->send(m_brightness); // brightness*/
+  m_wire->endTransmission();
+  #endif
+}
+
+void LightEvent::fadeHSBRandom()
+{
+  #if SEND
+  m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send(RANDOM_HSB); // c is fade to color
+  m_wire->send(RANDOM_HUE_RANGE); // value randomness of hue
+  m_wire->send(0x00); // randomness of saturation
+  m_wire->send(0x00); // randomness of brightness*/
   m_wire->endTransmission();
   #endif
 }

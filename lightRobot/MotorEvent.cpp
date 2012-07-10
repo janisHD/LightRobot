@@ -1,8 +1,8 @@
 
 #include "MotorEvent.h"
 
-#define SPEED_TRANS_FAKTOR 2
-#define SPEED_MAX 255
+#define SPEED_TRANS_FAKTOR 1
+#define SPEED_MAX 200
 
 #define SPEED_TRANS_MOTOR_PERCENT_FAKTOR 0.1921
 #define SPEED_TRANS_MOTOR_PERCENT_ADD 50

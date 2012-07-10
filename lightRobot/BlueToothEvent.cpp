@@ -23,7 +23,7 @@ void BlueToothEvent::onTimeEvent()
         
         //[0] -> direction to drive [0-254]
         //[1] -> velocity to drive [0-254]
-        //[2] -> desired color for the Light [0-254]
+        //[2] -> desired color for the Light [0-254] in 2 bit packets -> b0[0,3]->Brightnes | [0,3]->Red| [0,3]->Green | [0,3]->Blue
         //[3] -> internal mode (see responsible class)[0-254]
         
         if(Serial.available() >= DATA_WORD_LENGTH)

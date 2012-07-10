@@ -30,17 +30,27 @@ class LightEvent : public TimeEvent
   /*! Executes a more complex (and time consuming) action.*/
   virtual void executeAction();
   
+  void setHSB(byte red, byte green, byte blue, byte brightness);
+  void setHSB(byte hue, byte brightness);
+  
+  void setHSBColor(byte red, byte green, byte blue);
+  void setHSBBrightness(byte brightness);
+  
+  
   void setBrightness(byte value);
   void setRed(byte value);
   void setGreen(byte value);
   void setBlue(byte value);
   void turnOn(bool value);
   
+  byte getHue(){return m_hue;}
+  
   enum State {
     init,
     shine,
     blink,
-    random
+    random,
+    random_blink
   };
   
   private:
@@ -48,6 +58,22 @@ class LightEvent : public TimeEvent
   /*! Sets the color accordin to the internal value of red, green and blue
   */
   void  setColor();
+  
+  /*! Fades to a rgb color*/
+  
+  void fadeColor();
+  
+  /*! Sets the color in hsb mode*/
+  void fadeHSB();
+  
+  /*! Sets the blikm to random hsb mode*/
+  void fadeHSBRandom();
+  
+  /*! Maps a value between [0,63] to [0,255]*/
+  byte mapHue(byte value);
+
+  /*! Maps a value between [0,3] to [0,255]*/  
+  byte mapBrightness(byte value);
   
   /*! Maps the value from 0-3 to a value between 0-255
   */
@@ -76,6 +102,7 @@ class LightEvent : public TimeEvent
   /*! basically on or of
   */
   bool m_light_state;
+  byte m_hue;
   byte m_brightness;
   byte m_red;
   byte m_green;

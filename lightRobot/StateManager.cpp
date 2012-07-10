@@ -59,26 +59,30 @@ void StateManager::manageState()
          m_lcd_event_0->setInternalState(LCDEvent::remoteControl);
          m_lcd_event_1->setInternalState(LCDEvent::freePaint);
          
-         m_light_event->setRed((byte)0xff);
+         /*m_light_event->setRed((byte)0xff);
          m_light_event->setGreen((byte)0x00);
-         m_light_event->setBlue((byte)0x00);
+         m_light_event->setBlue((byte)0x00);*/
+         m_light_event->setHSB((byte)0, (byte)0xff);//sets color to red
          m_update_lcd = false;
        }
        
        //acquire new data from bt
        if(m_bt_event->m_new_data_present)
        {
-       m_data_packet = m_bt_event->getDataPacket();
+        m_data_packet = m_bt_event->getDataPacket();
        
-       //set values for the motors
-       m_motor_event->setSpeed(m_data_packet.speed);
-       m_motor_event->setDirection(m_data_packet.direction);
+        //set values for the motors
+        m_motor_event->setSpeed(m_data_packet.speed);
+        m_motor_event->setDirection(m_data_packet.direction);
        
-       //set values for the light
-       m_light_event->setRed((byte)m_data_packet.color[1]);
-       m_light_event->setGreen((byte)m_data_packet.color[2]);
-       m_light_event->setBlue((byte)m_data_packet.color[3]);
-     }
+        //set values for the light
+       /* m_light_event->setRed((byte)m_data_packet.color[1]);
+        m_light_event->setGreen((byte)m_data_packet.color[2]);
+        m_light_event->setBlue((byte)m_data_packet.color[3]);*/
+        m_light_event->setHSB((byte)m_data_packet.color[1], (byte)m_data_packet.color[2], (byte)m_data_packet.color[3], (byte)m_data_packet.color[0]);
+        m_light_event->setInternalState(convertColorMode((byte)m_data_packet.mode[1]), true);
+       
+      }
        
        /*m_lcd_event_1->setFreePaintString(String("L") + 
                                          String( m_motor_event->getSpeedMotorLeft())+ 
@@ -97,6 +101,7 @@ void StateManager::manageState()
          m_lcd_event_0->setInternalState(LCDEvent::manualControl);
          m_lcd_event_1->setInternalState(LCDEvent::freePaint);
          //m_lcd_event_1->setFreePaintString("L  R  ");
+         m_light_event->setHSB((byte)70, (byte)0xff);//sets color to green
          m_update_lcd = false;
        }
        
@@ -112,9 +117,8 @@ void StateManager::manageState()
        }
        if(m_button_event->isButtonCClicked())
        {
-         m_light_event->setRed((byte)0x00);
-         m_light_event->setGreen((byte)0xff);
-         m_light_event->setBlue((byte)0x00);
+         m_light_event->setHSB(189, 0xff);
+         
        }
        
        if(m_button_event->isButtonAClicked())
@@ -126,6 +130,11 @@ void StateManager::manageState()
        break;
      }
    };
+}
+
+byte StateManager::convertColorMode(byte bt_color_mode)
+{
+    return bt_color_mode + 1;
 }
 
 
