@@ -17,23 +17,64 @@
 #define TURN_VALUE 127*TURN_MULTIPLICATOR // This value minus the received defines the turn radius 
 #define TURN_MIN (5) //Radius smaller than this lets the wheel start to turn backwards
 
-
+#define RANDOM_MOVE_DURATION 7
+#define RANDOM_MOVE_SPEED 65
 
  MotorEvent::MotorEvent():
  TimeEvent(),
+ m_state(normal),
  m_speed(0),
  m_speed_external(0),
  m_direction(0),
  m_speed_motor_left(0),
  m_speed_motor_right(0),
- m_update_motors(false)
+ m_update_motors(false),
+ m_random_counter(0)
 {
-  
+//  int random_number;
+//  randomSeed(analogRead(1));
 }
 
 void MotorEvent::onTimeEvent()
-{	
-  m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
+{
+  if(m_state != m_state_old)
+  {//on state change
+    m_state_old = m_state;
+    m_speed_motor_right = 0;
+    m_speed_motor_left = 0;
+    m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
+    
+  }
+  switch(m_state)
+  {
+    case normal:
+    {
+      m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
+      break;
+    }
+    case random_m:
+    {
+      if(m_update)
+      {
+        setSpeed(RANDOM_MOVE_SPEED);
+        m_update = false;
+      }
+      if(m_random_counter >= RANDOM_MOVE_DURATION)
+      {
+       m_random_counter = 0;
+       long random_number = random(-DIRECTION_MAX, DIRECTION_MAX);
+       setDirection((byte)random_number);
+       m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
+      }
+      else
+        m_random_counter++;
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  };
 }
 
 void MotorEvent::stopMotors()
@@ -151,12 +192,13 @@ void MotorEvent::setDirection(short direction)
 
 unsigned char MotorEvent::getInternalState()
 {
-  return m_speed;
+  return m_state;
 }
 
 void MotorEvent::setInternalState(unsigned char state, bool update)
 {
-  //nothing to do here!
+  m_state = (State)state;
+  m_update = update;
 }
 
 void MotorEvent::executeAction()

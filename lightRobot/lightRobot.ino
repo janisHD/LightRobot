@@ -77,6 +77,8 @@ void setup()
   lcd_event_1.setInternalState(LCDEvent::clear, true);
   lcd_event_1.onTimeEvent();
   
+  randomSeed(analogRead(6));
+  
   Serial.begin(9600);
 
 }

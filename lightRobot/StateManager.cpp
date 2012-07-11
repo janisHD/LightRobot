@@ -74,6 +74,7 @@ void StateManager::manageState()
         //set values for the motors
         m_motor_event->setSpeed(m_data_packet.speed);
         m_motor_event->setDirection(m_data_packet.direction);
+        m_motor_event->setInternalState((byte)m_data_packet.mode[0], true);
        
         //set values for the light
        /* m_light_event->setRed((byte)m_data_packet.color[1]);

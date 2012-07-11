@@ -47,6 +47,13 @@ class MotorEvent : public TimeEvent
   
   short getDirection();
   
+  public:
+  
+  enum State{
+    normal=0,
+    random_m
+  };
+  
   private:
   
   void calcMotorSpeed();
@@ -55,6 +62,11 @@ class MotorEvent : public TimeEvent
   private:
   
   OrangutanMotors m_motors;
+  
+  /*! The internal state of this module
+  */
+  State m_state;
+  State m_state_old;
   
   /*! The speed of the robot [-255, 255]
   */
@@ -73,6 +85,9 @@ class MotorEvent : public TimeEvent
   short m_speed_motor_right;
   
   bool m_update_motors;
+  
+  /*! used as a timer for the random movement part*/
+  int m_random_counter;
 };
 
 #endif
