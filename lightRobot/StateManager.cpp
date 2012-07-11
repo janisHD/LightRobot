@@ -5,6 +5,8 @@
  m_state(init),
  m_old_state(remoteControl),
  m_update_lcd(true),
+ m_range_event(NULL),
+ m_light_event(NULL),
  m_motor_event(NULL),
  m_bt_event(NULL),
  m_lcd_event_0(NULL),
@@ -13,10 +15,11 @@
 {
 }
 
-StateManager::StateManager(LightEvent *light_event, MotorEvent *motor_event, BlueToothEvent *bt_event, LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event):
+StateManager::StateManager(RangeEvent *range_event, LightEvent *light_event, MotorEvent *motor_event, BlueToothEvent *bt_event, LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event):
  m_state(init),
  m_old_state(remoteControl),
  m_update_lcd(true),
+ m_range_event(range_event),
  m_light_event(light_event),
  m_motor_event(motor_event),
 m_bt_event(bt_event),
@@ -67,13 +70,14 @@ void StateManager::manageState()
        }
        
        //acquire new data from bt
-       if(m_bt_event->m_new_data_present)
+       if(m_bt_event->m_new_data_present || m_range_event->m_new_data_present)
        {
         m_data_packet = m_bt_event->getDataPacket();
        
         //set values for the motors
         m_motor_event->setSpeed(m_data_packet.speed);
         m_motor_event->setDirection(m_data_packet.direction);
+        m_motor_event->setDistanceValue(m_range_event->getDistanceValue());
         m_motor_event->setInternalState((byte)m_data_packet.mode[0], true);
        
         //set values for the light
@@ -118,7 +122,11 @@ void StateManager::manageState()
        }
        if(m_button_event->isButtonCClicked())
        {
-         m_light_event->setHSB(189, 0xff);
+         //m_light_event->setHSB(189, 0xff);
+         if(m_range_event->getDistanceValue() > 100)
+         m_motor_event->setSpeed(50);
+         else
+         m_motor_event->setSpeed(0);
          
        }
        

@@ -12,6 +12,7 @@
 #include "StateManager.h"
 //#include <Wire.h>
 #include "LightEvent.h"
+#include "RangeEvent.h"
 //#include "SoftI2Master.h"
 
 #define SLOW_ACTION 150
@@ -24,7 +25,9 @@
 #define LCD_ATTACHED 0
 #define MOTOR_ACTIVATED 1
 
-#define LIGHT_ACTIVATED 1
+#define LIGHT_ACTIVATED 0
+
+#define RANGE_ACTIVATED 1
 
 SoftI2CMaster m_wire(2,4);
 
@@ -42,6 +45,8 @@ TimedAction motor_action = TimedAction(MOTOR_ACTION, motorEvent);
 LightEvent light_event(&m_wire);
 //LightEvent light_event;
 TimedAction light_action = TimedAction(SLOW_ACTION, lightEvent);
+RangeEvent range_event(&m_wire);
+TimedAction range_action = TimedAction(SLOW_ACTION, rangeEvent);
 
 
 void buttonEvent(){
@@ -68,7 +73,11 @@ void lightEvent(){
   light_event.onTimeEvent();
 }
 
-StateManager state_manager(&light_event, &motor_event, &bt_event, &lcd_event_0, &lcd_event_1, &button_event);
+void rangeEvent(){
+  range_event.onTimeEvent();
+}
+
+StateManager state_manager(&range_event, &light_event, &motor_event, &bt_event, &lcd_event_0, &lcd_event_1, &button_event);
 
 void setup()
 {  
@@ -96,6 +105,9 @@ void loop()
   #endif
   #if LIGHT_ACTIVATED
   light_action.check();
+  #endif
+  #if RANGE_ACTIVATED
+  range_action.check();
   #endif
   
   state_manager.manageState();

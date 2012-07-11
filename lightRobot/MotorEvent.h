@@ -47,6 +47,8 @@ class MotorEvent : public TimeEvent
   
   short getDirection();
   
+  void setDistanceValue(unsigned int distance_value){m_distance_value = distance_value;};
+  
   public:
   
   enum State{
@@ -88,6 +90,10 @@ class MotorEvent : public TimeEvent
   
   /*! used as a timer for the random movement part*/
   int m_random_counter;
+  
+  /*! Distance value to decide if driving in current direction makes sense*/
+  
+  unsigned int m_distance_value;
 };
 
 #endif

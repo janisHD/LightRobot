@@ -55,19 +55,31 @@ void MotorEvent::onTimeEvent()
     case random_m:
     {
       if(m_update)
-      {
+      {//at first run
         setSpeed(RANDOM_MOVE_SPEED);
         m_update = false;
       }
-      if(m_random_counter >= RANDOM_MOVE_DURATION)
+      
+      if(m_distance_value <= 50)
       {
-       m_random_counter = 0;
-       long random_number = random(-DIRECTION_MAX, DIRECTION_MAX);
-       setDirection((byte)random_number);
-       m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
+        setSpeed(-RANDOM_MOVE_SPEED);
+        setDirection(0);
+        m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
       }
       else
-        m_random_counter++;
+      {
+      
+        if(m_random_counter >= RANDOM_MOVE_DURATION)
+        {
+         m_random_counter = 0;
+         setSpeed(RANDOM_MOVE_SPEED);
+         long random_number = random((-DIRECTION_MAX+1), (DIRECTION_MAX-1));
+         setDirection((byte)random_number);
+         m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
+        }
+        else
+          m_random_counter++;
+      }
       break;
     }
     default:

@@ -1,5 +1,6 @@
 /*! \file StateManager.h Implementation of the global statemanager.*/
 
+#include "RangeEvent.h"
 #include "LightEvent.h"
 #include "MotorEvent.h"
 #include "BlueToothEvent.h"
@@ -17,7 +18,7 @@ class StateManager
   public:
   
   StateManager();
-  StateManager(LightEvent *light_event, MotorEvent *motor_event, BlueToothEvent *bt_event,  LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event);
+  StateManager(RangeEvent *range_event, LightEvent *light_event, MotorEvent *motor_event, BlueToothEvent *bt_event,  LCDEvent * lcd_event_0, LCDEvent * lcd_event_1, ButtonEvent *button_event);
   ~StateManager(){}
   
   /*! The central part of the software. This method is executed over and over again. In this place the data is managed and distributed for the several processes like the motors, the light, the buttons and the bt-connection
@@ -44,6 +45,7 @@ class StateManager
   
   bool m_update_lcd;
   
+  RangeEvent *m_range_event;
   LightEvent *m_light_event;
   MotorEvent *m_motor_event;
   BlueToothEvent *m_bt_event;
