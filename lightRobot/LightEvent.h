@@ -67,7 +67,7 @@ class LightEvent : public TimeEvent
   void fadeHSB();
   
   /*! Sets the blikm to random hsb mode*/
-  void fadeHSBRandom();
+  void fadeHSBRandom(byte hue_randomness=0x40);
   
   /*! Maps a value between [0,63] to [0,255]*/
   byte mapHue(byte value);
@@ -97,7 +97,8 @@ class LightEvent : public TimeEvent
   
   /*! Determines if the LED should blink, shine, or change their color randomly
   */
-  int m_state;
+  State m_state;
+  State m_old_state;
   
   /*! basically on or of
   */

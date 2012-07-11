@@ -3,6 +3,8 @@
 
 #define SPEED_TRANS_FAKTOR 1
 #define SPEED_MAX 200
+#define DIRECTION_MAX 127
+#define DIRECTION_OFFSET 20 //reduces the direction value linear MAX should be TURN_MIN*TURN_MULTIPLICATOR
 
 #define SPEED_TRANS_MOTOR_PERCENT_FAKTOR 0.1921
 #define SPEED_TRANS_MOTOR_PERCENT_ADD 50
@@ -11,8 +13,8 @@
 
 #define WHEEL_DISTANCE 100 //about 100mm
 #define SPEED_FACTOR 900/255 //255 means full speed, its about 900mm/s
-#define TURN_MULTIPLICATOR 5 //Factor with which the received turn rate is multiplied (to cover a greater range)
-#define TURN_VALUE 127*5 // This value minus the received defines the turn radius 
+#define TURN_MULTIPLICATOR 6 //Factor with which the received turn rate is multiplied (to cover a greater range). The greater this value is, the lesser sharp the robot is turning
+#define TURN_VALUE 127*TURN_MULTIPLICATOR // This value minus the received defines the turn radius 
 #define TURN_MIN (5) //Radius smaller than this lets the wheel start to turn backwards
 
 
@@ -111,36 +113,10 @@ void MotorEvent::calcMotorSpeed()
     left_wheel = speed + (WHEEL_DISTANCE*speed)/(2*radius);
     right_wheel = speed - (WHEEL_DISTANCE*speed)/(2*radius);
   }
-  /*else if(direction < 0)
-  {//Leftmotor is inner wheel, direction is negative
-    left_wheel = speed + (WHEEL_DISTANCE*speed)/(2*radius);
-    right_wheel = speed - (WHEEL_DISTANCE*speed)/(2*radius);
-  }
-  else if(direction > 0)
-  {//rightmotor is inner wheel
-    left_wheel = speed + (WHEEL_DISTANCE*speed)/(2*radius);
-    right_wheel = speed - (WHEEL_DISTANCE*speed)/(2*radius);
-  }*/
   
-  //m_speed_motor_left = (-1)*restrictSpeed(left_wheel);
-  //m_speed_motor_right = (-1)*restrictSpeed(right_wheel);
   m_speed_motor_left = restrictSpeed(left_wheel);
   m_speed_motor_right = restrictSpeed(right_wheel);
   m_update_motors = true;
-  
-  /*short temp_motor_speed = sin(m_direction)*m_speed;
-  
-  if(temp_motor_speed > SPEED_MAX || temp_motor_speed < (-SPEED_MAX))
-    temp_motor_speed = SPEED_MAX * ((temp_motor_speed > 0)-(temp_motor_speed < 0));//simple signum
-  
-  m_speed_motor_left = temp_motor_speed;
-  
-  temp_motor_speed = cos(m_direction)*m_speed;
-  
-  if(temp_motor_speed > SPEED_MAX || temp_motor_speed < (-SPEED_MAX))
-    temp_motor_speed = SPEED_MAX * ((temp_motor_speed > 0)-(temp_motor_speed < 0));
-    
-  m_speed_motor_right = temp_motor_speed;*/
 }
   
 
@@ -150,23 +126,25 @@ short MotorEvent::getDirection()
 }
 void MotorEvent::setDirection(short direction)
 {//comes as [-127, 127], goes as [-1260, 1260]
+  //switch steering direction
+  //direction = (-1)*direction;
   if(direction >= -TURN_MIN && direction <= TURN_MIN)
   {//this means do not turn at all
     m_direction = 0;
   }
-  else if (direction == -127 || direction == 127)
+  else if (direction == -DIRECTION_MAX || direction == DIRECTION_MAX)
   {
     if(direction > 0)
-     m_direction = TURN_VALUE;
-    else
      m_direction = -TURN_VALUE;
+    else
+     m_direction = TURN_VALUE;
   }
   else
   {
     if(direction >= 0)
-     m_direction = TURN_VALUE - direction * TURN_MULTIPLICATOR - 10;
+     m_direction = TURN_VALUE - direction * TURN_MULTIPLICATOR - DIRECTION_OFFSET;
     else
-     m_direction = (-TURN_VALUE) - (direction * TURN_MULTIPLICATOR + 10);
+     m_direction = (-TURN_VALUE) - (direction * TURN_MULTIPLICATOR + DIRECTION_OFFSET);
   }
   calcMotorSpeed();
 }

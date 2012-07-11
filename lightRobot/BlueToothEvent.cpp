@@ -45,10 +45,10 @@ void BlueToothEvent::processData(unsigned char* data)
 {
   m_data_packet.speed = data[velocity];
   m_data_packet.direction = data[direction];
-  m_data_packet.color[0] = data[color] & B00000011;
-  m_data_packet.color[1] = (data[color] & B00001100)>>2;
-  m_data_packet.color[2] = (data[color] & B00110000)>>4;
-  m_data_packet.color[3] = (data[color] & B11000000)>>6;
+  m_data_packet.color[0] = data[color] & 0b00000011;
+  m_data_packet.color[1] = (data[color] & 0b00001100)>>2;
+  m_data_packet.color[2] = (data[color] & 0b00110000)>>4;
+  m_data_packet.color[3] = (data[color] & 0b11000000)>>6;
   m_data_packet.mode[0] = data[mode] & B00001111;
   m_data_packet.mode[1] = (data[mode] & B11110000)>>4;
 }

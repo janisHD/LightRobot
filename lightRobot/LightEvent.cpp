@@ -69,6 +69,12 @@ void LightEvent::onTimeEvent()
 {
   if(m_update)
   {//only if new data is available
+    if(m_old_state != m_state)
+    {//if state changed
+      m_light_state = true;
+      turnOn();
+      m_old_state = m_state;
+    }
     switch(m_state)
     {
       case init:
@@ -106,10 +112,6 @@ void LightEvent::onTimeEvent()
       if(m_blink_counter >= RANDOM_DURATION)
       {//only if time is up NEVER clear update!
         m_blink_counter = 0;
-        if(m_light_state)
-         m_light_state = false;
-        else
-         m_light_state = true;
         //fadeHSB();
         fadeHSBRandom();
       }
@@ -125,13 +127,14 @@ void LightEvent::onTimeEvent()
         m_blink_counter = 0;
         if(m_light_state)
         {
+          turnOn();
          m_light_state = false;
-         fadeHSBRandom();
+         fadeHSBRandom(0xf0);
         }
         else
         {
           turnOn();
-         m_light_state = true;
+          m_light_state = true;
         }
       }
       else
@@ -229,7 +232,16 @@ byte LightEvent::mapHue(byte value)
 
 byte LightEvent::mapBrightness(byte value)
 {
-  return FAKTOR_BRIGHTNESS * value;
+  if(value == 0)
+      return 0;
+    if(value == 1)
+      return 60;//100
+    if(value == 2)
+      return 110;//200
+    if(value == 3)
+      return 0xff;
+    else
+      return 0x00;
 }
 
 void LightEvent::turnOn()
@@ -264,7 +276,7 @@ byte LightEvent::mapLightValue(byte value)
       return 0x64;//100
     if(value == 2)
       return 0xC8;//200
-    if(value == 4)
+    if(value == 3)
       return 0xff;
   }
 
@@ -304,12 +316,24 @@ void LightEvent::fadeHSB()
   #endif
 }
 
-void LightEvent::fadeHSBRandom()
+/*void LightEvent::fadeHSBRandom()
 {
   #if SEND
   m_wire->beginTransmission(BLINK_ADRESS);
-  m_wire->send(RANDOM_HSB); // c is fade to color
+  m_wire->send(RANDOM_HSB); 
   m_wire->send(RANDOM_HUE_RANGE); // value randomness of hue
+  m_wire->send(0x00); // randomness of saturation
+  m_wire->send(0x00); // randomness of brightness
+  m_wire->endTransmission();
+  #endif
+}*/
+
+void LightEvent::fadeHSBRandom(byte hue_randomness)
+{
+  #if SEND
+  m_wire->beginTransmission(BLINK_ADRESS);
+  m_wire->send(RANDOM_HSB); 
+  m_wire->send(hue_randomness); // value randomness of hue
   m_wire->send(0x00); // randomness of saturation
   m_wire->send(0x00); // randomness of brightness*/
   m_wire->endTransmission();
