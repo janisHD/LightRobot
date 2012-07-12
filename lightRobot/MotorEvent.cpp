@@ -19,6 +19,7 @@
 
 #define RANDOM_MOVE_DURATION 7
 #define RANDOM_MOVE_SPEED 65
+#define RANDOM_DISTANCE_VALUE 30
 
  MotorEvent::MotorEvent():
  TimeEvent(),
@@ -60,7 +61,7 @@ void MotorEvent::onTimeEvent()
         m_update = false;
       }
       
-      if(m_distance_value <= 50)
+      if(m_distance_value <= RANDOM_DISTANCE_VALUE)
       {
         setSpeed(-RANDOM_MOVE_SPEED);
         setDirection(0);
@@ -73,7 +74,7 @@ void MotorEvent::onTimeEvent()
         {
          m_random_counter = 0;
          setSpeed(RANDOM_MOVE_SPEED);
-         long random_number = random((-DIRECTION_MAX+1), (DIRECTION_MAX-1));
+         long random_number = random((-DIRECTION_MAX+2), (DIRECTION_MAX-2));
          setDirection((byte)random_number);
          m_motors.setSpeeds(m_speed_motor_right, m_speed_motor_left);
         }

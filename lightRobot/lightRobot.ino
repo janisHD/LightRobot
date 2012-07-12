@@ -15,17 +15,17 @@
 #include "RangeEvent.h"
 //#include "SoftI2Master.h"
 
-#define SLOW_ACTION 150
+#define SLOW_ACTION 100
 #define MIDDLE_ACTION 75
 #define MOTOR_ACTION 150
-#define FAST_ACTION 10
+#define FAST_ACTION 40
 #define FASTER_ACTION 5
 
 
 #define LCD_ATTACHED 0
 #define MOTOR_ACTIVATED 1
 
-#define LIGHT_ACTIVATED 0
+#define LIGHT_ACTIVATED 1
 
 #define RANGE_ACTIVATED 1
 
@@ -39,7 +39,7 @@ TimedAction lcd_action_0 = TimedAction(SLOW_ACTION, lcdEvent0);
 LCDEvent lcd_event_1(1);
 TimedAction lcd_action_1 = TimedAction(SLOW_ACTION, lcdEvent1);
 BlueToothEvent bt_event;
-TimedAction bt_action = TimedAction(MIDDLE_ACTION, btEvent);
+TimedAction bt_action = TimedAction(FAST_ACTION, btEvent);
 MotorEvent motor_event;
 TimedAction motor_action = TimedAction(MOTOR_ACTION, motorEvent);
 LightEvent light_event(&m_wire);
