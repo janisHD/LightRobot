@@ -57,44 +57,36 @@ void StateManager::manageState()
      }
      case remoteControl:
      {
+       /*! Remote controlled state: 
+       *  Input is gathered and Output is set accordingly
+       */
        if(m_update_lcd)
-       {//only once
+       {//only once, when entering this mode executed
          m_lcd_event_0->setInternalState(LCDEvent::remoteControl);
          m_lcd_event_1->setInternalState(LCDEvent::freePaint);
          
-         /*m_light_event->setRed((byte)0xff);
-         m_light_event->setGreen((byte)0x00);
-         m_light_event->setBlue((byte)0x00);*/
          m_light_event->setHSB((byte)0, (byte)0xff);//sets color to red
          m_update_lcd = false;
        }
        
-       //acquire new data from bt
+       
        if(m_bt_event->m_new_data_present || m_range_event->m_new_data_present)
        {
-        m_data_packet = m_bt_event->getDataPacket();
+         /*Only if new Range or BT-Data is available the following part needs to be executed*/
+         
+          m_data_packet = m_bt_event->getDataPacket();
        
-        //set values for the motors
-        m_motor_event->setSpeed(m_data_packet.speed);
-        m_motor_event->setDirection(m_data_packet.direction);
-        m_motor_event->setDistanceValue(m_range_event->getDistanceValue());
-        m_motor_event->setInternalState((byte)m_data_packet.mode[0], true);
+          //Set the values for the moving part
+          m_motor_event->setSpeed(m_data_packet.speed);
+          m_motor_event->setDirection(m_data_packet.direction);
+          m_motor_event->setDistanceValue(m_range_event->getDistanceValue());
+          m_motor_event->setInternalState((byte)m_data_packet.mode[0], true);
        
-        //set values for the light
-       /* m_light_event->setRed((byte)m_data_packet.color[1]);
-        m_light_event->setGreen((byte)m_data_packet.color[2]);
-        m_light_event->setBlue((byte)m_data_packet.color[3]);*/
-        m_light_event->setHSB((byte)m_data_packet.color[1], (byte)m_data_packet.color[2], (byte)m_data_packet.color[3], (byte)m_data_packet.color[0]);
-        m_light_event->setInternalState(convertColorMode((byte)m_data_packet.mode[1]), true);
-       
+         //Set the values for the light part
+          m_light_event->setHSB((byte)m_data_packet.color[1], (byte)m_data_packet.color[2], (byte)m_data_packet.color[3], (byte)m_data_packet.color[0]);
+          m_light_event->setInternalState(convertColorMode((byte)m_data_packet.mode[1]), true);
       }
-       
-       /*m_lcd_event_1->setFreePaintString(String("L") + 
-                                         String( m_motor_event->getSpeedMotorLeft())+ 
-                                         String("R") + 
-                                         String(m_motor_event->getSpeedMotorRight()));       */
-       //m_lcd_event_1->setFreePaintString(String("L") + String(m_motor_event->getSpeedMotorLeft() + String("R") + String(m_motor_event->getSpeedMotorRight())));
-       
+       //Button control
        if(m_button_event->isButtonAClicked())
          m_state = manualControl;
        break;

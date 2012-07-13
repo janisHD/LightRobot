@@ -31,7 +31,8 @@
 
 SoftI2CMaster m_wire(2,4);
 
-
+/*! Set up the hooks for the TimeActions
+*/
 ButtonEvent button_event;
 TimedAction button_action = TimedAction(MIDDLE_ACTION, buttonEvent);
 LCDEvent lcd_event_0;
@@ -49,6 +50,7 @@ RangeEvent range_event(&m_wire);
 TimedAction range_action = TimedAction(SLOW_ACTION, rangeEvent);
 
 
+/*! Callback functions*/
 void buttonEvent(){
   button_event.onTimeEvent();
 }
@@ -94,6 +96,7 @@ void setup()
 
 void loop()
 {
+  /*! Checks if the time has come to execute a special event*/
   button_action.check();
   #if LCD_ATTACHED
   lcd_action_0.check();
@@ -109,7 +112,7 @@ void loop()
   #if RANGE_ACTIVATED
   range_action.check();
   #endif
-  
+  /*! Manage state as often as possible*/
   state_manager.manageState();
 }
 
